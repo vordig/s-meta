@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
 using Microsoft.Extensions.Options;
+using SMeta.Web.Endpoints;
 using SMeta.Web.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -13,27 +14,20 @@ builder.Services.AddApiVersioning(options =>
     options.ApiVersionReader = new UrlSegmentApiVersionReader();
 }).AddApiExplorer(options =>
 {
-    options.GroupNameFormat = "'v'VVV";
+    options.GroupNameFormat = "'v'VVVV";
     options.SubstituteApiVersionInUrl = true;
 });
 
 var app = builder.Build();
 
-var versionSet = app.NewApiVersionSet()
+var apiVersionSet = app.NewApiVersionSet()
     .HasApiVersion(new ApiVersion(1.0))
-    .HasApiVersion(new ApiVersion(2.0))
+    .HasApiVersion(new ApiVersion(1.1))
+    .HasApiVersion(new ApiVersion(2.19))
     .ReportApiVersions()
     .Build();
 
-var baseApiUrl = "api/v{version:apiVersion}";
-
-app.MapGet($"{baseApiUrl}/hello", () => "Hello world")
-    .WithApiVersionSet(versionSet)
-    .MapToApiVersion(new ApiVersion(1.0));
-
-app.MapGet($"{baseApiUrl}/hello", () => "Hello world v2")
-    .WithApiVersionSet(versionSet)
-    .MapToApiVersion(new ApiVersion(2.0));
+app.MapProjectEndpoints(apiVersionSet);
 
 app.UseSwagger();
 app.UseSwaggerUI(options =>
@@ -42,7 +36,7 @@ app.UseSwaggerUI(options =>
     foreach (var description in descriptions)
     {
         var url = $"/swagger/{description.GroupName}/swagger.json";
-        var name = description.GroupName.ToUpperInvariant();
+        var name = description.GroupName;
         options.SwaggerEndpoint(url, name);
     }
 });
