@@ -1,13 +1,13 @@
 ﻿using Asp.Versioning.Builder;
 using Asp.Versioning;
 
-namespace SMeta.Web.Endpoints;
+namespace SMeta.Web.Extensions;
 
-public static class EndpointsBase
+public static class EndpointRouteBuilderExtensions
 {
     private const string BaseApiUrl = "api/v{version:apiVersion}";
 
-    public static RouteGroupBuilder GetRouteGroup(IEndpointRouteBuilder endpoints, ApiVersionSet apiVersionSet,
+    public static IEndpointRouteBuilder GetVersionedRouteGroup(this IEndpointRouteBuilder endpoints, ApiVersionSet apiVersionSet,
         string urlPrefix, string groupName, ApiVersion apiVersion)
     {
         var routeGroup = endpoints.MapGroup($"{BaseApiUrl}/{urlPrefix}")
